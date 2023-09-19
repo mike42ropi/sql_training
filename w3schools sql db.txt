@@ -1,0 +1,143 @@
+Question 2:
+Display a single relation with: OrderId, OrderDate, CustomerName, City, Address, PostalCode, ShipperName, ProductName, Quantity.
+
+Answer
+
+SELECT  o.OrderId, o.OrderDate, c.CustomerName, c.City, c.Address, c.PostalCode, sh.ShipperName, P.ProductName, od.Quantity 
+FROM Customers AS c
+JOIN Orders AS o on  c.CustomerID  = o.CustomerId
+JOIN Orderdetails AS od on  o.OrderId = od.OrderId
+JOIN Products AS P on od.ProductID = p.ProductID
+JOIN Shippers AS sh on o.ShipperID = sh.ShipperID;
+
+Question 3:
+Display all products ever been ordered and display the shipper name.
+
+Answer
+SELECT  P.ProductName,sh.ShipperName
+FROM Products AS P
+JOIN Orderdetails AS od on p.ProductID = od.ProductID
+JOIN Orders AS o on  od.OrderId = o.OrderId
+JOIN Shippers AS sh on o.ShipperID = sh.ShipperID;
+
+Question 4:
+Display the count of all products shipped by each of the 3 shippers.
+
+Answer
+
+SELECT  P.ProductName,sh.ShipperName, COUNT(od.Quantity) AS total
+FROM Products AS P
+JOIN Orderdetails AS od on p.ProductID = od.ProductID
+JOIN Orders AS o on  od.OrderId = o.OrderId
+JOIN Shippers AS sh on o.ShipperID = sh.ShipperID
+GROUP BY ShipperName  ORDER BY total;
+
+Question 5:
+How many customers DO NOT have the words ‘son’ in their CustomerName.
+
+Answer
+SELECT COUNT(CustomerName) FROM Customers WHERE CustomerName NOT LIKE '%son%';
+
+Question 6:
+Find the total sales made in the year 1997.
+
+Answer
+
+SELECT SUM(p.Price * od.Quantity) AS total_sales
+FROM  Orders AS o
+JOIN OrderDetails AS od on o.OrderID = od.orderid
+JOIN Products  AS p on od.productid = p.productid
+WHERE 	o.OrderDate >=1996-10-01 OR o.OrderDate <=1996-10-31;
+
+Question 7:
+
+Display each customer_name and total_amount ever spent in the business, from highest amount.
+
+Answer 
+
+SELECT c.CustomerName,SUM(p.Price * od.Quantity) AS total_amount 
+FROM Customers AS c
+JOIN orders AS o on c.customerid = o.customerid
+JOIN OrderDetails AS od on o.OrderID = od.orderid
+JOIN Products  AS p on od.productid = p.productid
+GROUP BY customername ORDER BY total_amount ;
+
+Question 8
+Find the top supplier of the business (in terms of products ordered).
+
+Answers
+s.SupplierName,o.OrderID,p.ProductName,SUM(od.Quantity) AS total
+FROM Suppliers AS s
+JOIN Products  AS p on s.SupplierID = p.SupplierID
+JOIN OrderDetails AS od on p.ProductID = od.ProductID
+JOIN Orders AS o on od.OrderID = o.OrderID
+GROUP BY SupplierName  ORDER BY total DESC LIMIT 1;
+
+Question 9
+
+Find the total sales of each product.
+
+Answer
+
+SELECT p.ProductName,SUM(p.Price * od.Quantity) AS total_sales 
+FROM Customers AS c
+JOIN orders AS o on c.customerid = o.customerid
+JOIN OrderDetails AS od on o.OrderID = od.orderid
+JOIN Products  AS p on od.productid = p.productid
+GROUP BY customername ORDER BY total_sales ;
+
+Queson 10
+Find the best performing month in the business in terms of sales. Hint: Use substr() on the date to slice
+
+Answer 
+
+SELECT SUBSTR(o.OrderDate, 1,7)AS MONTH ,SUM(p.Price * od.Quantity) AS total_sales
+FROM  Orders AS o
+JOIN OrderDetails AS od on o.OrderID = od.orderid
+JOIN Products  AS p on od.productid = p.productid
+GROUP BY OrderDate order by total_sales DESC;
+
+
+Question 11
+Find the total sales per day.
+
+Answer 
+
+SELECT o.OrderDate,SUM(p.Price * od.Quantity) as total_sales
+FROM  Orders as o
+JOIN OrderDetails as od on o.OrderID = od.orderid
+JOIN Products  as p on od.productid = p.productid
+WHERE o.OrderDate BETWEEN '1996-01-01' AND '1996-12-31'
+GROUP BY o.OrderDate ORDER BY total_sales ;
+
+Question 12
+Find the total Sales for each Customer, the ones who have never ordered leave as 0.
+
+Answer
+
+SELECT c.CustomerName, IFNULL(SUM(p.Price * od.Quantity), 0) AS total_sales
+FROM Customers AS c
+LEFT JOIN Orders AS o ON c.CustomerID = o.CustomerID
+LEFT JOIN OrderDetails AS od ON o.OrderID = od.OrderID
+LEFT JOIN Products AS p ON od.ProductID = p.ProductID
+GROUP BY c.CustomerName;
+
+Question 13
+In the same database, create the table payments and determine the foreign key, any relevant columns and their respective data types. Insert at least 5 records.
+
+Answer
+
+CREATE TABLE Payments(
+PaymentID   PRIMARY KEY  ,
+OrderID INT NOT NULL ,
+PaymentDate  ,
+Amount INT NOT NULL 
+);
+
+INSERT INTO Payments(OrderID,PaymentDate,Amount)
+VALUES
+(1301,'1996-07-01',400),
+(1302,'1996-07-02',500),
+(1303,'1996-07-03',600),
+(1304,'1996-07-14',700),
+(1305,'1996-07-05',900);
